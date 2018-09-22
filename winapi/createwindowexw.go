@@ -19,6 +19,7 @@ func CreateWindowW(
 	style uint32,
 	x, y, width, height int32,
 	parent, menu, instance syscall.Handle,
+	param uintptr,
 ) (syscall.Handle, error) {
 	ret, _, err := pCreateWindowExW.Call(
 		uintptr(0),
@@ -32,7 +33,7 @@ func CreateWindowW(
 		uintptr(parent),
 		uintptr(menu),
 		uintptr(instance),
-		uintptr(0),
+		param,
 	)
 	if ret == 0 {
 		return 0, err
