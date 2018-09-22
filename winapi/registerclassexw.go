@@ -5,24 +5,28 @@ import (
 	"unsafe"
 )
 
+const (
+	COLOR_WINDOW = 5
+)
+
 var (
 	pRegisterClassExW = user32.NewProc("RegisterClassExW")
 )
 
 // WNDCLASSEXW contains window class information.
 type WNDCLASSEXW struct {
-	size       uint32
-	style      uint32
-	wndProc    uintptr
-	clsExtra   int32
-	wndExtra   int32
-	instance   syscall.Handle
-	icon       syscall.Handle
-	cursor     syscall.Handle
-	background syscall.Handle
-	menuName   *uint16
-	className  *uint16
-	iconSm     syscall.Handle
+	Size       uint32
+	Style      uint32
+	WndProc    uintptr
+	ClsExtra   int32
+	WndExtra   int32
+	Instance   syscall.Handle
+	Icon       syscall.Handle
+	Cursor     syscall.Handle
+	Background syscall.Handle
+	MenuName   *uint16
+	ClassName  *uint16
+	IconSm     syscall.Handle
 }
 
 // RegisterClassW registers a window class for use in CreateWindowW.
