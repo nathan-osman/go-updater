@@ -15,7 +15,9 @@ const (
 
 const (
 	WS_DLGFRAME = 0x00400000
+	WS_CAPTION  = 0x00C00000
 	WS_VISIBLE  = 0x10000000
+	WS_CHILD    = 0x40000000
 )
 
 var (

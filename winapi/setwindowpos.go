@@ -4,10 +4,6 @@ import (
 	"syscall"
 )
 
-const (
-	SWP_NOSIZE = 0x0001
-)
-
 var (
 	pSetWindowPos = user32.NewProc("SetWindowPos")
 )

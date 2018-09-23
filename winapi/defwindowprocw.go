@@ -7,7 +7,7 @@ import (
 const (
 	WM_CREATE  = 0x0001
 	WM_DESTROY = 0x0002
-	WM_CLOSE   = 0x0010
+	WM_COMMAND = 0x0111
 )
 
 var (
