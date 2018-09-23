@@ -3,6 +3,7 @@
 package dialog
 
 import (
+	"context"
 	"syscall"
 	"unsafe"
 
@@ -13,6 +14,8 @@ const (
 	className = "updateDialog"
 
 	ID_BUTTON = 101
+
+	WM_USER_CLOSE = winapi.WM_USER
 )
 
 // The call to CreateWindowW includes a pointer to the WindowsDialog, which is
@@ -52,18 +55,20 @@ func init() {
 
 // WindowsDialog implements the Dialog interface using the Windows API.
 type WindowsDialog struct {
-	hwnd     syscall.Handle
-	cancelCh chan<- bool
+	hwnd       syscall.Handle
+	cancelFunc context.CancelFunc
 }
 
 func (w *WindowsDialog) wndProc(hwnd syscall.Handle, msg uint32, wparam, lparam uintptr) uintptr {
 	switch msg {
 	case winapi.WM_COMMAND:
 		if winapi.LOWORD(uint32(wparam)) == ID_BUTTON {
-			w.cancelCh <- true
+			w.cancelFunc()
 		}
 	case winapi.WM_DESTROY:
 		winapi.PostQuitMessage(0)
+	case WM_USER_CLOSE:
+		winapi.DestroyWindow(hwnd)
 	default:
 		return winapi.DefWindowProcW(hwnd, msg, wparam, lparam)
 	}
@@ -139,9 +144,8 @@ func New() Dialog {
 }
 
 // Exec shows the window and runs an event loop.
-func (w *WindowsDialog) Exec(cancelCh chan<- bool) {
-	defer close(cancelCh)
-	w.cancelCh = cancelCh
+func (w *WindowsDialog) Exec(cancelFunc context.CancelFunc) {
+	w.cancelFunc = cancelFunc
 	w.initialize()
 	w.resizeAndCenter()
 	for {
@@ -165,7 +169,7 @@ func (w *WindowsDialog) SetProgress(int) {
 	//...
 }
 
-// Close destroys the dialog and causes .
+// Close destroys the dialog and terminates the event loop.
 func (w *WindowsDialog) Close() {
-	winapi.DestroyWindow(w.hwnd)
+	winapi.PostMessageW(w.hwnd, WM_USER_CLOSE, 0, 0)
 }

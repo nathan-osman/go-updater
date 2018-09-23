@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/nathan-osman/go-updater/dialog"
 )
 
@@ -9,15 +11,15 @@ func main() {
 	// Create the dialog
 	d := dialog.New()
 
-	// Create a channel for cancel events from the button
-	cancelCh := make(chan bool)
+	// Create a context for canceling the operation
+	ctx, cancelFunc := context.WithCancel(context.Background())
 	go func() {
 		select {
-		case <-cancelCh:
+		case <-ctx.Done():
 			d.Close()
 		}
 	}()
 
 	// Run the event loop
-	d.Exec(cancelCh)
+	d.Exec(cancelFunc)
 }
