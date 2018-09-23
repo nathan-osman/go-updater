@@ -53,7 +53,6 @@ func init() {
 type WindowsDialog struct {
 	hwnd     syscall.Handle
 	cancelCh chan<- bool
-	v        string
 }
 
 func (w *WindowsDialog) wndProc(hwnd syscall.Handle, msg uint32, wparam, lparam uintptr) uintptr {
@@ -135,7 +134,7 @@ func (w *WindowsDialog) resizeAndCenter() {
 
 // New creates a new Windows dialog.
 func New() Dialog {
-	return &WindowsDialog{v: "test"}
+	return &WindowsDialog{}
 }
 
 // Exec shows the window and runs an event loop.
