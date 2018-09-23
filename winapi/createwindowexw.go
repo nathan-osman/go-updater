@@ -9,6 +9,10 @@ const (
 	PROGRESS_CLASSW = "msctls_progress32"
 )
 
+const (
+	SW_USE_DEFAULT = -1
+)
+
 var (
 	pCreateWindowExW = user32.NewProc("CreateWindowExW")
 )
