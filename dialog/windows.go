@@ -15,7 +15,9 @@ const (
 
 	ID_BUTTON = 101
 
-	WM_USER_CLOSE = winapi.WM_USER
+	WM_USER_SETSTATUS = iota + winapi.WM_USER
+	WM_USER_SETPROGRESS
+	WM_USER_CLOSE
 )
 
 // The call to CreateWindowW includes a pointer to the WindowsDialog, which is
@@ -55,8 +57,10 @@ func init() {
 
 // WindowsDialog implements the Dialog interface using the Windows API.
 type WindowsDialog struct {
-	hwnd       syscall.Handle
-	cancelFunc context.CancelFunc
+	hwnd         syscall.Handle
+	hwndStatus   syscall.Handle
+	hwndProgress syscall.Handle
+	cancelFunc   context.CancelFunc
 }
 
 func (w *WindowsDialog) wndProc(hwnd syscall.Handle, msg uint32, wparam, lparam uintptr) uintptr {
@@ -67,6 +71,8 @@ func (w *WindowsDialog) wndProc(hwnd syscall.Handle, msg uint32, wparam, lparam 
 		}
 	case winapi.WM_DESTROY:
 		winapi.PostQuitMessage(0)
+	case WM_USER_SETPROGRESS:
+		winapi.SendMessageW(w.hwndProgress, winapi.PBM_SETPOS, wparam, 0)
 	case WM_USER_CLOSE:
 		winapi.DestroyWindow(hwnd)
 	default:
@@ -87,7 +93,7 @@ func (w *WindowsDialog) initialize() {
 		0, 0, 0,
 		uintptr(unsafe.Pointer(w)),
 	)
-	winapi.CreateWindowExW(
+	w.hwndStatus, _ = winapi.CreateWindowExW(
 		"STATIC",
 		"Initializing...",
 		winapi.WS_CHILD|winapi.WS_VISIBLE,
@@ -104,7 +110,7 @@ func (w *WindowsDialog) initialize() {
 		ID_BUTTON,
 		0, 0,
 	)
-	winapi.CreateWindowExW(
+	w.hwndProgress, _ = winapi.CreateWindowExW(
 		winapi.PROGRESS_CLASSW,
 		"",
 		winapi.WS_CHILD|winapi.WS_VISIBLE,
@@ -165,8 +171,8 @@ func (w *WindowsDialog) SetStatus(string) {
 }
 
 // SetProgress sets the value of the progress bar.
-func (w *WindowsDialog) SetProgress(int) {
-	//...
+func (w *WindowsDialog) SetProgress(value int) {
+	winapi.PostMessageW(w.hwnd, WM_USER_SETPROGRESS, uintptr(value), 0)
 }
 
 // Close destroys the dialog and terminates the event loop.
