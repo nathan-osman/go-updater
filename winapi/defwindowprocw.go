@@ -8,6 +8,7 @@ const (
 	WM_CREATE  = 0x0001
 	WM_DESTROY = 0x0002
 	WM_COMMAND = 0x0111
+	WM_USER    = 0x0400
 )
 
 var (
