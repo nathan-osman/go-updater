@@ -13,8 +13,8 @@ var (
 	pCreateWindowExW = user32.NewProc("CreateWindowExW")
 )
 
-// CreateWindowW creates an overlapped, pop-up, or child window.
-func CreateWindowW(
+// CreateWindowExW creates an overlapped, pop-up, or child window.
+func CreateWindowExW(
 	className, windowName string,
 	style uint32,
 	x, y, width, height int32,
