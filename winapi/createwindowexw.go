@@ -24,6 +24,22 @@ var (
 	pCreateWindowExW = user32.NewProc("CreateWindowExW")
 )
 
+// CREATESTRUCTW defines the initialization parameters passed to the window procedure of an application.
+type CREATESTRUCTW struct {
+	CreateParams uintptr
+	Instance     syscall.Handle
+	Menu         syscall.Handle
+	Parent       syscall.Handle
+	Cy           int32
+	Cx           int32
+	Y            int32
+	X            int32
+	Style        uint32
+	Name         uintptr
+	Class        uintptr
+	ExStyle      uint32
+}
+
 // CreateWindowExW creates an overlapped, pop-up, or child window.
 func CreateWindowExW(
 	className, windowName string,

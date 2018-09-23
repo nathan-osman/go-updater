@@ -24,8 +24,9 @@ func wndProc(hwnd syscall.Handle, msg uint32, wparam, lparam uintptr) uintptr {
 		winapi.GetWindowLongPtrW(hwnd, winapi.GWLP_USERDATA),
 	))
 	if dlg == nil && msg == winapi.WM_CREATE {
-		dlg = (*WindowsDialog)(unsafe.Pointer(lparam))
-		winapi.SetWindowLongPtrW(hwnd, winapi.GWLP_USERDATA, lparam)
+		cs := (*winapi.CREATESTRUCTW)(unsafe.Pointer(lparam))
+		dlg = (*WindowsDialog)(unsafe.Pointer(cs.CreateParams))
+		winapi.SetWindowLongPtrW(hwnd, winapi.GWLP_USERDATA, cs.CreateParams)
 	}
 	if dlg != nil {
 		return dlg.wndProc(hwnd, msg, wparam, lparam)
@@ -59,7 +60,7 @@ func (w *WindowsDialog) wndProc(hwnd syscall.Handle, msg uint32, wparam, lparam 
 	switch msg {
 	case winapi.WM_COMMAND:
 		if winapi.LOWORD(uint32(wparam)) == ID_BUTTON {
-			close(w.cancelCh)
+			w.cancelCh <- true
 		}
 	case winapi.WM_DESTROY:
 		winapi.PostQuitMessage(0)
@@ -139,6 +140,7 @@ func New() Dialog {
 
 // Exec shows the window and runs an event loop.
 func (w *WindowsDialog) Exec(cancelCh chan<- bool) {
+	defer close(cancelCh)
 	w.cancelCh = cancelCh
 	w.initialize()
 	w.resizeAndCenter()
