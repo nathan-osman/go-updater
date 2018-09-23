@@ -1,6 +1,10 @@
 package winapi
 
 const (
+	HWND_TOP = 0
+)
+
+const (
 	SM_CXSCREEN = 0
 	SM_CYSCREEN = 1
 )

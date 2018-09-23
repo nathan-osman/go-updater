@@ -13,6 +13,11 @@ const (
 	SW_USE_DEFAULT = -1
 )
 
+const (
+	WS_DLGFRAME = 0x00400000
+	WS_VISIBLE  = 0x10000000
+)
+
 var (
 	pCreateWindowExW = user32.NewProc("CreateWindowExW")
 )
