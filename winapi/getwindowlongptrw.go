@@ -18,5 +18,5 @@ func GetWindowLongPtrW(hwnd syscall.Handle, index int32) uintptr {
 		uintptr(hwnd),
 		uintptr(index),
 	)
-	return uintptr(ret)
+	return ret
 }
