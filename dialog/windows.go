@@ -58,14 +58,15 @@ type WindowsDialog struct {
 	hwnd         syscall.Handle
 	hwndStatus   syscall.Handle
 	hwndProgress syscall.Handle
-	cancelFunc   context.CancelFunc
+	ctx          context.Context
+	cancel       context.CancelFunc
 }
 
 func (w *WindowsDialog) wndProc(hwnd syscall.Handle, msg uint32, wparam, lparam uintptr) uintptr {
 	switch msg {
 	case winapi.WM_COMMAND:
 		if winapi.LOWORD(uint32(wparam)) == ID_BUTTON {
-			w.cancelFunc()
+			w.cancel()
 		}
 	case winapi.WM_DESTROY:
 		winapi.PostQuitMessage(0)
@@ -142,12 +143,20 @@ func (w *WindowsDialog) resizeAndCenter() {
 
 // New creates a new Windows dialog.
 func New() Dialog {
-	return &WindowsDialog{}
+	ctx, cancel := context.WithCancel(context.Background())
+	return &WindowsDialog{
+		ctx:    ctx,
+		cancel: cancel,
+	}
+}
+
+// Context returns a context to signal when the cancel button is clicked.
+func (w *WindowsDialog) Context() context.Context {
+	return w.ctx
 }
 
 // Exec shows the window and runs an event loop.
-func (w *WindowsDialog) Exec(cancelFunc context.CancelFunc) {
-	w.cancelFunc = cancelFunc
+func (w *WindowsDialog) Exec() {
 	w.initialize()
 	w.resizeAndCenter()
 	for {
