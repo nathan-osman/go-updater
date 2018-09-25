@@ -5,6 +5,34 @@ import (
 	"unsafe"
 )
 
+const (
+	FW_DONTCARE = 0
+)
+
+const (
+	ANSI_CHARSET = 0
+)
+
+const (
+	OUT_TT_PRECIS = 4
+)
+
+const (
+	CLIP_DEFAULT_PRECIS = 0
+)
+
+const (
+	DEFAULT_QUALITY = 0
+)
+
+const (
+	DEFAULT_PITCH = 0
+)
+
+const (
+	FF_DONTCARE = 0
+)
+
 var (
 	pCreateFontW = user32.NewProc("CreateFontW")
 )
