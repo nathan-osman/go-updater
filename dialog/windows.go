@@ -78,7 +78,25 @@ func (w *WindowsDialog) wndProc(hwnd syscall.Handle, msg uint32, wparam, lparam 
 	return 0
 }
 
+func pointSizeToPixels(pointSize int32) int32 {
+	hdc, _ := winapi.GetDC(0)
+	defer winapi.ReleaseDC(0, hdc)
+	return -winapi.MulDiv(pointSize, winapi.GetDeviceCaps(hdc, winapi.LOGPIXELSY), 72)
+}
+
 func (w *WindowsDialog) initialize() {
+	hfont, _ := winapi.CreateFontW(
+		pointSizeToPixels(9),
+		0, 0, 0,
+		winapi.FW_DONTCARE,
+		0, 0, 0,
+		winapi.ANSI_CHARSET,
+		winapi.OUT_TT_PRECIS,
+		winapi.CLIP_DEFAULT_PRECIS,
+		winapi.DEFAULT_QUALITY,
+		winapi.DEFAULT_PITCH|winapi.FF_DONTCARE,
+		"MS Shell Dlg 2",
+	)
 	w.hwnd, _ = winapi.CreateWindowExW(
 		className,
 		"Software Update",
@@ -98,7 +116,8 @@ func (w *WindowsDialog) initialize() {
 		w.hwnd,
 		0, 0, 0,
 	)
-	winapi.CreateWindowExW(
+	winapi.SendMessageW(w.hwndStatus, winapi.WM_SETFONT, uintptr(hfont), 0)
+	hwndButton, _ := winapi.CreateWindowExW(
 		"BUTTON",
 		"Cancel",
 		winapi.WS_CHILD|winapi.WS_VISIBLE,
@@ -107,6 +126,7 @@ func (w *WindowsDialog) initialize() {
 		ID_BUTTON,
 		0, 0,
 	)
+	winapi.SendMessageW(hwndButton, winapi.WM_SETFONT, uintptr(hfont), 0)
 	w.hwndProgress, _ = winapi.CreateWindowExW(
 		winapi.PROGRESS_CLASSW,
 		"",
