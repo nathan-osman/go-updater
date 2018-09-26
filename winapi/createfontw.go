@@ -34,7 +34,7 @@ const (
 )
 
 var (
-	pCreateFontW = user32.NewProc("CreateFontW")
+	pCreateFontW = gdi32.NewProc("CreateFontW")
 )
 
 // CreateFontW creates a logical font with the specified characteristics.
