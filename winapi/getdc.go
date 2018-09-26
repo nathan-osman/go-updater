@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	pGetDC = gdi32.NewProc("GetDC")
+	pGetDC = user32.NewProc("GetDC")
 )
 
 // GetDC retrieves a handle to a device context for the client area of a specified window.

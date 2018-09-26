@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	pReleaseDC = gdi32.NewProc("ReleaseDC")
+	pReleaseDC = user32.NewProc("ReleaseDC")
 )
 
 // ReleaseDC releases a device context.
